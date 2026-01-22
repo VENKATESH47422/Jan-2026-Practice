@@ -11,7 +11,7 @@ VALIDATE(){
     fi
 }
 
-if [ $ID -ne 0];
+if [ $ID -ne 0 ];
 then
     echo "Error:: Run this script with root user "
     exit 1
