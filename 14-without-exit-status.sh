@@ -12,6 +12,8 @@ lsfff
 
 echo "After wrong command"
 
+echo "venky"
+
 cd /tmp
 
 cd /home/centos
