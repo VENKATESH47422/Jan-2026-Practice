@@ -4,8 +4,10 @@ ID=$(id -u)
 
 if [ $ID -ne 0 ];
 then
-    echo " Error:: Please login with SUdo user "
+    echo " ERROR:: Please run this script with root access "
     exit 1
 else
-    echo " Root user login Succesful "
+    echo " You are root user "
 fi
+
+yum install mysql -y
