@@ -17,8 +17,7 @@ then
     echo " Error:: MySql installation is Failed "
     exit 1
 else
-    echo " Success:: MySql installation is Success "
-    exit 1
+    echo "Success:: MySql installation is Success "
 fi
 
 yum install nginx -y
@@ -29,7 +28,6 @@ then
     exit 1
 else
     echo " Success:: Nginx installation is Success "
-    exit 1
 fi
 
 
@@ -41,5 +39,4 @@ then
     exit 1
 else
     echo " Success:: Git installation is Success "
-    exit 1
 fi
