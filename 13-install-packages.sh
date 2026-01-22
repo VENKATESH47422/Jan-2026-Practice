@@ -32,7 +32,7 @@ for package in $@
 do 
 
     yum list installed $package &>> $LOGFILE
-    if [ $? -ne 0 ];
+    if [ $? -eq 0 ];
     then
         yum remove  $package -y &>> $LOGFILE
         VALIDATE $? "Installation of $package" 
