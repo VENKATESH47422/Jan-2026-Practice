@@ -19,14 +19,15 @@ else
     echo "You are a Root user"
 fi
 
-yum install nginx -y
+yum install telnet -y
 
-VALIDATE $? "Installing Nginx"
+VALIDATE $? "Installing Telnet"
 
 yum install git -y
 
 VALIDATE $? "Installing Git"
 
-yum install telnet -y
+yum install nginx -y
 
-VALIDATE $? "Installing Telnet"
+VALIDATE $? "Installing Nginx"
+
