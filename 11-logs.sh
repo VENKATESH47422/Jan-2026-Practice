@@ -15,14 +15,14 @@ then
     echo -e " $R Error:: Run this script with root user $N"
     exit 1
 else
-    echo " $G You are a Root user $N"
+    echo -e " $G You are a Root user $N"
 fi
 
 VALIDATE(){
     if [ $1 -ne 0 ];
     then
         echo -e  "ERROR:: $2.. $R Failed $N"
-       # exit 1
+        exit 1
     else
         echo -e  "$2 .. $G SUCCESS $N"
     fi 
