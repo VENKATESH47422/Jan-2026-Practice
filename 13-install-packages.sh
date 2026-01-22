@@ -32,9 +32,9 @@ for package in $@
 do 
 
     yum list installed $package &>> $LOGFILE
-    if [ $? -eq 0 ];
+    if [ $? -ne 0 ];
     then
-        yum remove  $package -y &>> $LOGFILE
+        yum install  $package -y &>> $LOGFILE
         VALIDATE $? "Installation of $package" 
     else
         echo -e  "$package is already installed ... $Y SKIPPING $N"
