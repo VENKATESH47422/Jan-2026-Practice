@@ -28,7 +28,7 @@ VALIDATE(){
     fi 
 }
 
-yum install telne -y &>> $LOGFILE
+yum install telnet -y &>> $LOGFILE
 
 VALIDATE $? "Installing Telnet"
 
