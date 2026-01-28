@@ -1,5 +1,5 @@
 - name: play level variables
-  hosts: local host
+  hosts: localhost
   vars:
     movie: salaar
     hero: prabhas
