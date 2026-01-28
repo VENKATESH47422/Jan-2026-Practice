@@ -19,4 +19,4 @@
   - name: delete user
     ansible.builtin.user:
       name: roboshop
-    when: user.rc != 0
+    when: user.rc = 0
