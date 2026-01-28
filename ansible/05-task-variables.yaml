@@ -3,7 +3,7 @@
   tasks:
     - name: play level variables display
       vars:
-       movie: salaar
+       movie: salaar from task
        hero: prabhas
       ansible.builtin.debug:
         msg: "I love {{hero}} acted {{movie}} very much"
