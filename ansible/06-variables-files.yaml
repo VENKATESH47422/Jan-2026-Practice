@@ -1,0 +1,8 @@
+- name: Variables form files
+  hosts: localhost
+  vars_files:
+    variables.yaml
+  tasks:
+    - name: play level variables display
+      ansible.builtin.debug:
+        msg: "I love {{hero}} acted {{movie}} very much"
