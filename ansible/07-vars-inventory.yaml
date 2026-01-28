@@ -1,0 +1,6 @@
+- name: play level variables
+  hosts: localhost
+  tasks:
+    - name: play level variables display
+      ansible.builtin.debug:
+        msg: "I love {{hero}} acted {{movie}} very much"
