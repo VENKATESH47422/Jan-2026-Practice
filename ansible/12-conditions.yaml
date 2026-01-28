@@ -16,7 +16,7 @@
     ansible.builtin.debug:
       msg: "status is: {{user.rc}}"
 
-  - name: create user
+  - name: delete user
     ansible.builtin.user:
       name: roboshop
     when: user.rc != 0
