@@ -1,9 +1,9 @@
-- name: play level variables
+- name: TAsk level variables
   hosts: localhost
   tasks:
-    vars:
-    movie: salaar
-    hero: prabhas
     - name: play level variables display
+      vars:
+       movie: salaar
+       hero: prabhas
       ansible.builtin.debug:
         msg: "I love {{hero}} acted {{movie}} very much"
