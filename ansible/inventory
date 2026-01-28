@@ -9,9 +9,7 @@ localhost
 198.168.56.5
 198.168.56.6
 
-[localhost:vars]
-hero="Prabhas-inv"
-movie="salaar"
+
 
 [web]
 54.221.173.243
