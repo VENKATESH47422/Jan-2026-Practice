@@ -4,7 +4,7 @@
   - name: movie
     prompt: please enter movie name
     private: false
-  - name: hero
+  - name: movie
     prompt: please enter hero name
     private: true
   tasks:
