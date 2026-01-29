@@ -64,6 +64,7 @@
   - name: get the categories count
     ansible.builtin.command:  mongo --host mongodb.venky.shop --quiet --eval 'db = db.getSiblingDB("catalogue"); db.products.count()'
     register: product_count
+    ignore_errors: true
 
   # - name: print the count
   #   ansible.builtin.debug:
