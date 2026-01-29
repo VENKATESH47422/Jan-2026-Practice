@@ -1,5 +1,5 @@
-- name: Catalogue
-  hosts: Catalogue
+- name: catalogue
+  hosts: catalogue
   become: yes
   tasks:
   - name: disbale old nodejs and enable nodejs
