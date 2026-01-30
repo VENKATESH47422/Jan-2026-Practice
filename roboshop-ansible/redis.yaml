@@ -1,4 +1,4 @@
-- name: Install Redis Component
+- name: Install and Configure Redis on CentOS 8
   hosts: redis
   become: yes
  
@@ -8,64 +8,40 @@
  
   tasks:
  
-    - name: Gather OS facts
-      setup:
- 
-    ############################################################
-    # AMAZON LINUX 2
-    ############################################################
-    - name: Enable redis from amazon-linux-extras
-      command: amazon-linux-extras enable redis6
-      when: ansible_distribution == "Amazon"
-      changed_when: false
- 
-    - name: Install redis on Amazon Linux
+    - name: Install EPEL repository
       yum:
-        name: redis
+        name: epel-release
         state: present
-      when: ansible_distribution == "Amazon"
  
-    ############################################################
-    # RHEL / CENTOS / ROCKY / ALMA
-    ############################################################
-    - name: Install Remi repository
+    - name: Install Remi repository (CentOS 8)
       yum:
         name: "https://rpms.remirepo.net/enterprise/remi-release-{{ ansible_distribution_major_version }}.rpm"
         state: present
-      when: ansible_distribution != "Amazon"
  
-    - name: Enable Redis module
+    - name: Enable Redis 6.2 module from Remi
       command: dnf module enable redis:remi-6.2 -y
-      when: ansible_distribution != "Amazon"
       changed_when: false
  
-    - name: Install redis
+    - name: Install Redis
       yum:
         name: redis
         state: present
-      when: ansible_distribution != "Amazon"
  
-    ############################################################
-    # CONFIGURATION
-    ############################################################
-    - name: Configure redis bind address
+    - name: Configure Redis bind address
       lineinfile:
         path: /etc/redis/redis.conf
         regexp: '^bind'
         line: "bind {{ redis_bind_address }}"
         backup: yes
  
-    - name: Configure redis port
+    - name: Configure Redis port
       lineinfile:
         path: /etc/redis/redis.conf
         regexp: '^port'
         line: "port {{ redis_port }}"
         backup: yes
  
-    ############################################################
-    # SERVICE
-    ############################################################
-    - name: Start and enable redis service
+    - name: Start and enable Redis service
       service:
         name: redis
         state: started
