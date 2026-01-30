@@ -1,0 +1,26 @@
+- name: Find yum repo files
+  find:
+    paths: /etc/yum.repos.d
+    patterns: "*.repo"
+  register: yum_repo_files
+ 
+- name: Disable mirrorlist
+  replace:
+    path: "{{ item.path }}"
+    regexp: '^mirrorlist='
+    replace: '#mirrorlist='
+  loop: "{{ yum_repo_files.files }}"
+ 
+- name: Enable CentOS Vault baseurl (CentOS Linux only)
+  replace:
+    path: "{{ item.path }}"
+    regexp: '^#baseurl=http://mirror.centos.org'
+    replace: 'baseurl=http://vault.centos.org'
+  loop: "{{ yum_repo_files.files }}"
+  when:
+    - ansible_distribution == "CentOS"
+    - ansible_distribution_release != "Stream"
+ 
+- name: Clean yum cache
+  command: yum clean all
+  changed_when: false
