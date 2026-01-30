@@ -1,4 +1,4 @@
-- name: Install and Configure Redis on CentOS 8
+- name: Install and Configure Redis on CentOS 8 (Vault-safe)
   hosts: redis
   become: yes
  
@@ -8,25 +8,49 @@
  
   tasks:
  
-    - name: Install EPEL repository
-      yum:
-        name: epel-release
-        state: present
+    ############################################################
+    # FIX CENTOS 8 EOL REPOS
+    ############################################################
+    - name: Disable mirrorlist
+      replace:
+        path: /etc/yum.repos.d/CentOS-*.repo
+        regexp: '^mirrorlist='
+        replace: '#mirrorlist='
  
-    - name: Install Remi repository (CentOS 8)
-      yum:
-        name: "https://rpms.remirepo.net/enterprise/remi-release-{{ ansible_distribution_major_version }}.rpm"
-        state: present
+    - name: Enable CentOS Vault repos
+      replace:
+        path: /etc/yum.repos.d/CentOS-*.repo
+        regexp: '^#baseurl=http://mirror.centos.org'
+        replace: 'baseurl=http://vault.centos.org'
  
-    - name: Enable Redis 6.2 module from Remi
+    - name: Clean yum cache
+      command: yum clean all
+      changed_when: false
+ 
+    ############################################################
+    # INSTALL REMI (NO EPEL)
+    ############################################################
+    - name: Install Remi repository
+      yum:
+        name: https://rpms.remirepo.net/enterprise/remi-release-8.rpm
+        state: present
+        disable_gpg_check: yes
+ 
+    - name: Enable Redis 6.2 module
       command: dnf module enable redis:remi-6.2 -y
       changed_when: false
  
+    ############################################################
+    # INSTALL REDIS
+    ############################################################
     - name: Install Redis
       yum:
         name: redis
         state: present
  
+    ############################################################
+    # CONFIGURATION
+    ############################################################
     - name: Configure Redis bind address
       lineinfile:
         path: /etc/redis/redis.conf
@@ -41,6 +65,9 @@
         line: "port {{ redis_port }}"
         backup: yes
  
+    ############################################################
+    # SERVICE
+    ############################################################
     - name: Start and enable Redis service
       service:
         name: redis
