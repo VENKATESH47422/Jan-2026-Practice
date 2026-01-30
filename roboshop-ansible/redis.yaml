@@ -1,4 +1,4 @@
-- name: Install and Configure Redis
+- name: Install and Configure Redis on CentOS Stream 8
   hosts: redis
   become: yes
  
@@ -9,48 +9,17 @@
   tasks:
  
     ############################################################
-    # FIX YUM REPOS (DYNAMIC & SAFE)
+    # CLEAN YUM CACHE (repos already fixed)
     ############################################################
-    - name: Find yum repo files
-      find:
-        paths: /etc/yum.repos.d
-        patterns: "*.repo"
-      register: yum_repo_files
- 
-    - name: Disable mirrorlist
-      replace:
-        path: "{{ item.path }}"
-        regexp: '^mirrorlist='
-        replace: '#mirrorlist='
-      loop: "{{ yum_repo_files.files }}"
-      when: yum_repo_files.matched > 0
- 
-    - name: Enable CentOS Vault baseurl (CentOS Linux only)
-      replace:
-        path: "{{ item.path }}"
-        regexp: '^#baseurl=http://mirror\.centos\.org'
-        replace: 'baseurl=http://vault.centos.org'
-      loop: "{{ yum_repo_files.files }}"
-      when:
-        - yum_repo_files.matched > 0
-        - ansible_distribution == "CentOS"
-        - ansible_distribution_release != "Stream"
- 
     - name: Clean yum cache
       command: yum clean all
       changed_when: false
  
     ############################################################
-    # INSTALL REMI
+    # ENABLE REDIS MODULE (AppStream)
     ############################################################
-    - name: Install Remi repository
-      yum:
-        name: https://rpms.remirepo.net/enterprise/remi-release-8.rpm
-        state: present
-        disable_gpg_check: yes
- 
-    - name: Enable Redis 6.2 module
-      command: dnf module enable redis:remi-6.2 -y
+    - name: Enable Redis module
+      command: dnf module enable redis -y
       changed_when: false
  
     ############################################################
