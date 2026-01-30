@@ -1,29 +1,72 @@
-- name: install redis component
+- name: Install Redis Component
   hosts: redis
   become: yes
+ 
+  vars:
+    redis_bind_address: 0.0.0.0
+    redis_port: 6379
+ 
   tasks:
-  - name: install remi release
-    ansible.builtin.dnf: # check pacakge will work not
-      name: https://rpms.remirepo.net/enterprise/remi-release-8.rpm
-      state: present
-      disable_gpg_check: true
-    
-  - name: enable redis
-    ansible.builtin.command: dnf module enable redis:remi-6.2 -y
-
-  - name: install redis
-    ansible.builtin.dnf:
-      name: redis
-      state: present
-
-  - name: allow remote connections
-    ansible.builtin.replace:
-      path: /etc/redis/redis.conf
-      regexp: '127.0.0.1'
-      replace: '0.0.0.0'
-
-  - name: start and enable redis
-    ansible.builtin.service:
-      name: redis
-      state: restarted
-      enabled: yes
+ 
+    - name: Gather OS facts
+      setup:
+ 
+    ############################################################
+    # AMAZON LINUX 2
+    ############################################################
+    - name: Enable redis from amazon-linux-extras
+      command: amazon-linux-extras enable redis6
+      when: ansible_distribution == "Amazon"
+      changed_when: false
+ 
+    - name: Install redis on Amazon Linux
+      yum:
+        name: redis
+        state: present
+      when: ansible_distribution == "Amazon"
+ 
+    ############################################################
+    # RHEL / CENTOS / ROCKY / ALMA
+    ############################################################
+    - name: Install Remi repository
+      yum:
+        name: "https://rpms.remirepo.net/enterprise/remi-release-{{ ansible_distribution_major_version }}.rpm"
+        state: present
+      when: ansible_distribution != "Amazon"
+ 
+    - name: Enable Redis module
+      command: dnf module enable redis:remi-6.2 -y
+      when: ansible_distribution != "Amazon"
+      changed_when: false
+ 
+    - name: Install redis
+      yum:
+        name: redis
+        state: present
+      when: ansible_distribution != "Amazon"
+ 
+    ############################################################
+    # CONFIGURATION
+    ############################################################
+    - name: Configure redis bind address
+      lineinfile:
+        path: /etc/redis/redis.conf
+        regexp: '^bind'
+        line: "bind {{ redis_bind_address }}"
+        backup: yes
+ 
+    - name: Configure redis port
+      lineinfile:
+        path: /etc/redis/redis.conf
+        regexp: '^port'
+        line: "port {{ redis_port }}"
+        backup: yes
+ 
+    ############################################################
+    # SERVICE
+    ############################################################
+    - name: Start and enable redis service
+      service:
+        name: redis
+        state: started
+        enabled: yes
