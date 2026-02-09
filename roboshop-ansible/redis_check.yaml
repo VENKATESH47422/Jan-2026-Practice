@@ -7,8 +7,6 @@
       ansible.builtin.shell: |
         sed -i 's|mirrorlist=|#mirrorlist=|g' /etc/yum.repos.d/CentOS-*
         sed -i 's|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g' /etc/yum.repos.d/CentOS-*
-      args:
-        warn: false
  
     - name: Install EPEL repo
       ansible.builtin.dnf:
@@ -22,7 +20,8 @@
         disable_gpg_check: yes
  
     - name: Enable Redis 6.2 module
-      ansible.builtin.command: dnf module enable redis:remi-6.2 -y
+      ansible.builtin.command:
+        cmd: dnf module enable redis:remi-6.2 -y
  
     - name: Install Redis
       ansible.builtin.dnf:
