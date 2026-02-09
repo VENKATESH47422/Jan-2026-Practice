@@ -3,10 +3,10 @@
   become: yes
  
   tasks:
-    - name: Fix CentOS 8 repos (Vault)
-      shell: |
-        sed -i 's|mirrorlist=|#mirrorlist=|g' /etc/yum.repos.d/CentOS-*
-        sed -i 's|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g' /etc/yum.repos.d/CentOS-*
+    # - name: Fix CentOS 8 repos (Vault)
+    #   shell: |
+    #     sed -i 's|mirrorlist=|#mirrorlist=|g' /etc/yum.repos.d/CentOS-*
+    #     sed -i 's|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g' /etc/yum.repos.d/CentOS-*
  
     - name: Enable Redis module from AppStream
       command: dnf module enable redis -y
