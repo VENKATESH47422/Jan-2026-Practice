@@ -1,35 +1,31 @@
-- name: Install Redis on CentOS 8 (AppStream)
+- name: install redis component
   hosts: redis
   become: yes
  
   tasks:
-    # - name: Fix CentOS 8 repos (Vault)
-    #   shell: |
-    #     sed -i 's|mirrorlist=|#mirrorlist=|g' /etc/yum.repos.d/CentOS-*
-    #     sed -i 's|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g' /etc/yum.repos.d/CentOS-*
+    - name: enable redis module
+      ansible.builtin.command: dnf module enable redis -y
  
-    - name: Enable Redis module from AppStream
-      command: dnf module enable redis -y
- 
-    - name: Install Redis
-      dnf:
+    - name: install redis
+      ansible.builtin.dnf:
         name: redis
         state: present
  
-    - name: Allow remote connections
-      replace:
+    - name: allow remote connections
+      ansible.builtin.replace:
         path: /etc/redis.conf
-        regexp: '^bind 127.0.0.1'
-        replace: 'bind 0.0.0.0'
+        regexp: '127.0.0.1'
+        replace: '0.0.0.0'
  
-    - name: Disable protected-mode
-      replace:
-        path: /etc/redis.conf
-        regexp: '^protected-mode yes'
-        replace: 'protected-mode no'
+    # - name: disable protected mode
+    #   ansible.builtin.replace:
+    #     path: /etc/redis.conf
+    #     regexp: 'protected-mode yes'
+    #     replace: 'protected-mode no'
  
-    - name: Start and enable Redis
-      service:
+    - name: start and enable redis
+      ansible.builtin.service:
         name: redis
-        state: started
+        state: restarted
         enabled: yes
+ 
