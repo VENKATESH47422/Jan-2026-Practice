@@ -67,7 +67,7 @@
       msg: "schema output: {{schema}}"
 
   - name: Load shipping schema if not already loaded
-    shell: mysql -h mysql.venky.shop -uroot -pRoboShop@1 < /app/schema/shipping.sql
+    shell: mysql -h mysql.venky.shop -uroot -pRoboShop@1 < /app/schema/shipping.jar
     when: schema.stdout != "1"
     args:
       creates: /var/lib/mysql/cities
