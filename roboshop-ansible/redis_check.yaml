@@ -8,12 +8,16 @@
         sed -i 's|mirrorlist=|#mirrorlist=|g' /etc/yum.repos.d/CentOS-*
         sed -i 's|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g' /etc/yum.repos.d/CentOS-*
  
+    - name: Enable PowerTools repo
+      ansible.builtin.shell: |
+        dnf config-manager --set-enabled powertools || true
+ 
     - name: Install EPEL repo
       ansible.builtin.dnf:
         name: epel-release
         state: present
  
-    - name: Install Remi repo
+    - name: Install Remi repo (generic)
       ansible.builtin.dnf:
         name: https://rpms.remirepo.net/enterprise/remi-release-8.rpm
         state: present
@@ -34,7 +38,7 @@
         regexp: '^bind 127.0.0.1'
         replace: 'bind 0.0.0.0'
  
-    - name: Disable protected-mode
+    - name: Disable protected mode
       ansible.builtin.replace:
         path: /etc/redis/redis.conf
         regexp: '^protected-mode yes'
