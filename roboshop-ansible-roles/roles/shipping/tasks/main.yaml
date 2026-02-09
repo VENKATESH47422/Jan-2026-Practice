@@ -2,18 +2,29 @@
   ansible.builtin.import_role:
     name: common
     tasks_from: app-setup
-
+ 
 - name: java
   ansible.builtin.import_role:
     name: common
     tasks_from: java
-
+ 
+# 👇 THIS IS THE MISSING PART
+- name: copy shipping mysql schema
+  ansible.builtin.file:
+    path: /app/schema
+    state: directory
+ 
+- name: copy schema file
+  ansible.builtin.copy:
+    src: schema/shipping.sql
+    dest: /app/schema/shipping.sql
+ 
 - name: mysql setup
   ansible.builtin.import_role:
     name: common
     tasks_from: mysql-setup
-
-- name: system start
+ 
+- name: systemd
   ansible.builtin.import_role:
     name: common
     tasks_from: systemd
