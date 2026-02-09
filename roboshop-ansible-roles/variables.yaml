@@ -1,0 +1,10 @@
+MONGODB_HOST: mongodb.venky.shop # submit your host
+REDIS_HOST: redis.venky.shop
+MYSQL_HOST: mysql.venky.shop
+RABBITMQ_HOST: rabbitmq.venky.shop
+CATALOGUE_HOST: catalogue.venky.shop
+USER_HOST: user.venky.shop
+CART_HOST: cart.venky.shop
+SHIPPING_HOST: shipping.venky.shop
+PAYMENT_HOST: payment.venky.shop
+DISPATCH_HOST: dispatch.venky.shop
