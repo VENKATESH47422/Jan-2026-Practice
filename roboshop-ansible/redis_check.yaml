@@ -16,15 +16,15 @@
         name: redis
         state: present
  
-    - name: Configure Redis bind
+    - name: Allow remote connections
       replace:
-        path: /etc/redis/redis.conf
+        path: /etc/redis.conf
         regexp: '^bind 127.0.0.1'
         replace: 'bind 0.0.0.0'
  
     - name: Disable protected-mode
       replace:
-        path: /etc/redis/redis.conf
+        path: /etc/redis.conf
         regexp: '^protected-mode yes'
         replace: 'protected-mode no'
  
