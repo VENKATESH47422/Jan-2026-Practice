@@ -1,40 +1,48 @@
-- name: Fix yum repos dynamically (CentOS / Stream safe)
-  hosts: all
+- name: Install Redis on CentOS 8
+  hosts: redis
   become: yes
  
   tasks:
+    - name: Fix CentOS 8 repos (Vault)
+      ansible.builtin.shell: |
+        sed -i 's|mirrorlist=|#mirrorlist=|g' /etc/yum.repos.d/CentOS-*
+        sed -i 's|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g' /etc/yum.repos.d/CentOS-*
+      args:
+        warn: false
  
-    - name: Find yum repo files
-      find:
-        paths: /etc/yum.repos.d
-        patterns: "*.repo"
-      register: yum_repo_files
+    - name: Install EPEL repo
+      ansible.builtin.dnf:
+        name: epel-release
+        state: present
  
-    - name: Show repo files found (debug)
-      debug:
-        msg: "{{ item.path }}"
-      loop: "{{ yum_repo_files.files }}"
-      when: yum_repo_files.matched > 0
+    - name: Install Remi repo
+      ansible.builtin.dnf:
+        name: https://rpms.remirepo.net/enterprise/remi-release-8.rpm
+        state: present
+        disable_gpg_check: yes
  
-    - name: Disable mirrorlist in repo files
-      replace:
-        path: "{{ item.path }}"
-        regexp: '^mirrorlist='
-        replace: '#mirrorlist='
-      loop: "{{ yum_repo_files.files }}"
-      when: yum_repo_files.matched > 0
+    - name: Enable Redis 6.2 module
+      ansible.builtin.command: dnf module enable redis:remi-6.2 -y
  
-    - name: Enable CentOS Vault baseurl (CentOS Linux only)
-      replace:
-        path: "{{ item.path }}"
-        regexp: '^#baseurl=http://mirror\.centos\.org'
-        replace: 'baseurl=http://vault.centos.org'
-      loop: "{{ yum_repo_files.files }}"
-      when:
-        - yum_repo_files.matched > 0
-        - ansible_distribution == "CentOS"
-        - ansible_distribution_release != "Stream"
+    - name: Install Redis
+      ansible.builtin.dnf:
+        name: redis
+        state: present
  
-    - name: Clean yum cache
-      command: yum clean all
-      changed_when: false
+    - name: Allow remote connections
+      ansible.builtin.replace:
+        path: /etc/redis/redis.conf
+        regexp: '^bind 127.0.0.1'
+        replace: 'bind 0.0.0.0'
+ 
+    - name: Disable protected-mode
+      ansible.builtin.replace:
+        path: /etc/redis/redis.conf
+        regexp: '^protected-mode yes'
+        replace: 'protected-mode no'
+ 
+    - name: Start and enable Redis
+      ansible.builtin.service:
+        name: redis
+        state: started
+        enabled: yes
