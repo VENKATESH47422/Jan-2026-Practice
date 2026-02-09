@@ -1,31 +1,58 @@
-- name: install redis component
+- name: Install and Configure Redis on CentOS Stream 8
   hosts: redis
   become: yes
  
-  tasks:
-    - name: enable redis module
-      ansible.builtin.command: dnf module enable redis -y
+  vars:
+    redis_bind_address: 0.0.0.0
+    redis_port: 6379
  
-    - name: install redis
-      ansible.builtin.dnf:
+  tasks:
+ 
+    ############################################################
+    # CLEAN YUM CACHE (repos already fixed)
+    ############################################################
+    - name: Clean yum cache
+      command: yum clean all
+      changed_when: false
+ 
+    ############################################################
+    # ENABLE REDIS MODULE (AppStream)
+    ############################################################
+    - name: Enable Redis module
+      command: dnf module enable redis -y
+      changed_when: false
+ 
+    ############################################################
+    # INSTALL REDIS
+    ############################################################
+    - name: Install Redis
+      yum:
         name: redis
         state: present
  
-    - name: allow remote connections
-      ansible.builtin.replace:
-        path: /etc/redis.conf
-        regexp: '127.0.0.1'
-        replace: '0.0.0.0'
+    ############################################################
+    # CONFIGURE REDIS
+    ############################################################
+    - name: Configure Redis bind address
+      lineinfile:
+        path: /etc/redis/redis.conf
+        regexp: '^bind'
+        line: "bind {{ redis_bind_address }}"
+        backup: yes
  
-    # - name: disable protected mode
-    #   ansible.builtin.replace:
-    #     path: /etc/redis.conf
-    #     regexp: 'protected-mode yes'
-    #     replace: 'protected-mode no'
+    - name: Configure Redis port
+      lineinfile:
+        path: /etc/redis/redis.conf
+        regexp: '^port'
+        line: "port {{ redis_port }}"
+        backup: yes
  
-    - name: start and enable redis
-      ansible.builtin.service:
+    ############################################################
+    # START SERVICE
+    ############################################################
+    - name: Start and enable Redis
+      service:
         name: redis
-        state: restarted
+        state: started
         enabled: yes
  
