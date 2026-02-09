@@ -15,8 +15,15 @@
     state: restarted
     enabled: yes
 
+# - name: create rabbitmq user
+#   ansible.builtin.command: "rabbitmqctl add_user {{rq_user}} {{rq_password}}"
+
 - name: create rabbitmq user
-  ansible.builtin.command: "rabbitmqctl add_user {{rq_user}} {{rq_password}}"
+  ansible.builtin.command: rabbitmqctl add_user {{ rq_user }} {{ rq_password }}
+  register: add_user_output
+  failed_when: >
+    add_user_output.rc != 0 and
+    'already exists' not in add_user_output.stderr
 
 - name: set permissions
   ansible.builtin.command: rabbitmqctl set_permissions -p / roboshop ".*" ".*" ".*"
