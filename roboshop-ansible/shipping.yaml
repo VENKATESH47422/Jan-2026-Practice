@@ -88,6 +88,14 @@
     register: schema
     changed_when: false
 
+  - name: print output
+    ansible.builtin.debug:
+      msg: "schema output: {{schema}}"
+
+  - name: load cities data
+    ansible.builtin.shell: "mysql -h mysql.venky.shop -uroot -p{{mysql_password}}  < /app/shipping.jar"
+    when: schema.stdout != "1"  
+
   - name: Restart shipping service
     ansible.builtin.service:
       name: shipping
