@@ -49,7 +49,7 @@
       src: shipping.service
       dest: /etc/systemd/system/shipping.service
 
-  - name: daemon realod and start
+  - name: deamon realod and start
     ansible.builtin.systemd_service:
       daemon_reload: true
 
@@ -59,21 +59,15 @@
       state: present
 
   - name: check cities schema exists or not
-    ansible.builtin.command:  mysql -h mysql.venky.shop -uroot -p{{mysql_password}} -sN -e "SELECT COUNT(*) FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = 'cities'"
+    ansible.builtin.command:  mysql -h mysql.daws76s.online -uroot -p{{mysql_password}} -sN -e "SELECT COUNT(*) FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = 'cities'"
     register: schema
 
   - name: print output
     ansible.builtin.debug:
       msg: "schema output: {{schema}}"
 
-  - name: Load shipping schema if not already loaded
-    shell: mysql -h mysql.venky.shop -uroot -pRoboShop@1 < /app/schema/shipping.jar
-    when: schema.stdout != "1"
-    args:
-      creates: /var/lib/mysql/cities
-
   - name: load cities data
-    ansible.builtin.shell: "mysql -h mysql.venky.shop -uroot -p{{mysql_password}}  < /app/schema/shipping.jar"
+    ansible.builtin.shell: "mysql -h mysql.daws76s.online -uroot -p{{mysql_password}}  < /app/schema/shipping.sql"
     when: schema.stdout != "1"
 
   - name: start and enable shipping
