@@ -60,7 +60,7 @@
 
   - name: Check if cities schema exists
     ansible.builtin.command: >
-      mysql -h {{ mysql_host }} -uroot -p{{ mysql_password }}
+      mysql -h mysql.venky.shop -uroot -p{{ mysql_password }}
       -sN -e "SELECT COUNT(*) FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME='cities'"
     register: schema
     changed_when: false
@@ -71,17 +71,17 @@
 
   - name: Load schema.sql
     ansible.builtin.shell: >
-      mysql -h {{ mysql_host }} -uroot -p{{ mysql_password }} < /app/db/schema.sql
+      mysql -h mysql.venky.shop -uroot -p{{ mysql_password }} < /app/db/schema.sql
     when: schema.stdout == "0"
 
   - name: Load app-user.sql
     ansible.builtin.shell: >
-      mysql -h {{ mysql_host }} -uroot -p{{ mysql_password }} < /app/db/app-user.sql
+      mysql -h mysql.venky.shop -uroot -p{{ mysql_password }} < /app/db/app-user.sql
     when: schema.stdout == "0"
 
   - name: Load master-data.sql
     ansible.builtin.shell: >
-      mysql -h {{ mysql_host }} -uroot -p{{ mysql_password }} < /app/db/master-data.sql
+      mysql -h mysql.venky.shop -uroot -p{{ mysql_password }} < /app/db/master-data.sql
     when: schema.stdout == "0"
 
   - name: Restart shipping service
