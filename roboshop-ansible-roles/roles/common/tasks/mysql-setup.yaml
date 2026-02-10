@@ -1,16 +1,30 @@
-- name: install mysql client
+- name: Install mysql client
   ansible.builtin.dnf:
     name: mysql
     state: present
 
-- name: check cities schema exists or not
-  ansible.builtin.command:  mysql -h {{MYSQL_HOST}} -uroot -p{{mysql_password}} -sN -e "SELECT COUNT(*) FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = 'cities'"
+- name: Check if cities schema exists
+  ansible.builtin.command: >
+    mysql -h mysql.venky.shop -uroot -p{{ mysql_password }}
+    -sN -e "SELECT COUNT(*) FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME='cities'"
   register: schema
+  changed_when: false
 
-- name: print output
+- name: Print schema status
   ansible.builtin.debug:
-    msg: "schema output: {{schema}}"
+    msg: "Cities schema count = {{ schema.stdout }}"
 
-- name: load cities data
-  ansible.builtin.shell: "mysql -h {{MYSQL_HOST}} -uroot -p{{mysql_password}}  < /app/schema/shipping.sql"
-  when: schema.stdout != "1"
+- name: Load schema.sql
+  ansible.builtin.shell: >
+    mysql -h mysql.venky.shop -uroot -p{{ mysql_password }} < /app/db/schema.sql
+  when: schema.stdout == "0"
+
+- name: Load app-user.sql
+  ansible.builtin.shell: >
+    mysql -h mysql.venky.shop -uroot -p{{ mysql_password }} < /app/db/app-user.sql
+  when: schema.stdout == "0"
+
+- name: Load master-data.sql
+  ansible.builtin.shell: >
+    mysql -h mysql.venky.shop -uroot -p{{ mysql_password }} < /app/db/master-data.sql
+  when: schema.stdout == "0"
