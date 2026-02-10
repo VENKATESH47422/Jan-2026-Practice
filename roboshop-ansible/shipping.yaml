@@ -40,7 +40,7 @@
       chdir: /app
 
   - name: rename jar file
-    ansible.builtin.command: mv target/shipping-1.0.jar shipping.jar
+    ansible.builtin.command: mv target/shipping-1.0.jar shipping.sql
     args:
       chdir: /app
 
@@ -93,7 +93,7 @@
       msg: "schema output: {{schema}}"
 
   - name: load cities data
-    ansible.builtin.shell: "mysql -h mysql.venky.shop -uroot -p{{mysql_password}}  < /app/shipping.jar"
+    ansible.builtin.shell: "mysql -h mysql.venky.shop -uroot -p{{mysql_password}}  < /app/shipping.sql"
     when: schema.stdout != "1"  
 
   - name: Restart shipping service
